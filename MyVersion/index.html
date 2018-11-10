@@ -36,7 +36,7 @@
     var game = new Phaser.Game(config);
     var score = 0;
     var scoreText;
-    
+    var gameReference;
     class Items{
         constructor(go,polygon,xIni,yIni){
             this.polygon = polygon;
@@ -48,9 +48,10 @@
     }
 
     class DropZone{
-        constructor(zone,name){
+        constructor(zone,name,altura = 0){
             this.zone = zone;
             this.name = name;
+            this.altura = altura;
         }
     }
     
@@ -66,6 +67,7 @@
     
     function create ()
     {
+        gameReference = this;
         //items creation
            // var x = 50;
             //var y = 50;
@@ -143,12 +145,14 @@
     this.input.on('dragenter', function (pointer, gameObject, dropZone) {
 
         dropZone.setTint(0x00ff00);
+        gameObject.setTint(0x00AAAA);
 
     });
 
     this.input.on('dragleave', function (pointer, gameObject, dropZone) {
 
         dropZone.clearTint();
+        gameObject.clearTint();
 
     });
 
@@ -156,9 +160,14 @@
 
         gameObject.x = dropZone.x;
         gameObject.y = dropZone.y;
-        console.log(zoneList);
-        searchMyClass(gameObject).myCollider = polygon;
-        
+        //console.log(gameReference);
+        if (searchMyClass(gameObject).myCollider != null){
+            searchMyClass(gameObject).myCollider.destroy();
+        }
+       searchMyClass(gameObject).myCollider =  zoneCreation('null',gameObject.x-150,gameObject.y-150,newPolygon(gameObject),gameReference,5);
+       console.log(searchMyClass(gameObject).myCollider);
+
+
         //gameObject.setScale(0.2);
 
         //gameObject.input.enabled = false;
@@ -174,7 +183,11 @@
             var it = searchMyClass(gameObject);
             gameObject.x = it.xIni;
             gameObject.y = it.yIni;
+            if (it.myCollider != null){
+                it.myCollider.destroy();
+            }
         }
+
 
     });
         
@@ -199,7 +212,7 @@
 
     function searchMyClassZone(zone){
         for (i = 0 ; i < zoneList.length; i++){
-            if (zoneList[i].name == zone){
+            if (zoneList[i].zone == zone){
                 return zoneList[i];
             }
         }
@@ -212,7 +225,29 @@
 
         
     }
+    function newPolygon(objRef){
+        var polygon = new Phaser.Geom.Polygon([
+            objRef.x+120, objRef.y +20,
+            objRef.x+260, objRef.y +80,
+            objRef.x+50, objRef.y +210,
+            objRef.x-50, objRef.y +110,
+            ])
+        var graphics = gameReference.add.graphics({ x: 0, y: 0 });
 
+        graphics.lineStyle(2, 0x00aa00);
+
+        graphics.beginPath();
+
+        graphics.moveTo(polygon.points[0].x, polygon.points[0].y);
+
+        for (var i = 1; i < polygon.points.length; i++)
+        {
+            graphics.lineTo(polygon.points[i].x, polygon.points[i].y);
+        }
+
+        graphics.closePath();
+        graphics.strokePath();
+    }
     function itemCreation(x,y,name,proc,scale = 1 ){
 
         var image = proc.add.image(x, y, name).setInteractive();
@@ -222,14 +257,14 @@
     }
 
     function zoneCreation(name,x,y,polygoon,fnc, scale = 1){
-        var zoned = fnc.add.image(x, y, 'chest').setInteractive(polygoon,function(hitArea, x, y, gameObject){
+        var zoned = fnc.add.image(x, y, name).setInteractive(polygoon,function(hitArea, x, y, gameObject){
             return choCo(hitArea, x,y,gameObject);
         });
 
         zoned.setScale(scale);
         zoned.input.dropZone = true;
         zoneList.push(new DropZone(zoned,name));
-
+        return zoned;
     }
     
     
