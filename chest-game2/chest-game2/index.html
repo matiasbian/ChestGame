@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <title>Isometric Packing Puzzle</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="lib/phaser-2.6.2.js"></script>
+    <script src="lib/phaser-plugin-isometric.js"></script>
+    <script src="src/globals.js"></script>
+    <script src="src/debug.js"></script>
+    <script src="src/boot.js"></script>
+    <script src="src/preloader.js"></script>
+    <script src="src/game.js"></script>
+</head>
+<body>
+    <script type="text/javascript">
+        var game = new Phaser.Game(1280, 720, Phaser.CANVAS);
+        game.state.add("boot", IPP.Boot);
+        game.state.start("boot");
+        window.PHASER_GAME = game;
+    </script>
+<body>
+</body>
+</html>
+    

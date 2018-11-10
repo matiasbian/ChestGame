@@ -1,0 +1,201 @@
+<!doctype html> 
+<html lang="en"> 
+<head> 
+    <meta charset="UTF-8" />
+    <title>Making your first Phaser 3 Game - Part 1</title>
+    <script src="//cdn.jsdelivr.net/npm/phaser@3.11.0/dist/phaser.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<script type="text/javascript">
+
+    var config = {
+        type: Phaser.AUTO,
+        width: 1024,
+        height: 768,
+        physics: {
+            default: 'arcade',
+            arcade:{
+                gravity: {y: 300},
+                debug:false
+            }
+        },
+        
+        scene: {
+            preload: preload,
+            create: create,
+            update: update
+        }
+    };
+
+    var game = new Phaser.Game(config);
+    var score = 0;
+    var scoreText;
+    
+    class Items{
+        constructor(go,polygon,xIni,yIni){
+            this.polygon = polygon;
+            this.xIni = xIni;
+            this.yIni = yIni;
+            this.go = go;
+        }
+    }
+    
+    var itemsList=[];
+    
+    function preload ()
+    {
+         this.load.image('ayu', 'images/objects/book1.png');
+         this.load.image('chest', 'images/chest.png');
+    }
+    
+    function create ()
+    {
+            var x = 50;
+            var y = 50;
+            var image = this.add.image(x, y, 'ayu').setInteractive();
+            this.input.setDraggable(image);
+            var book1 = new Items(image,null,x,y);
+            itemsList.push(book1);
+            
+            
+        
+        
+        
+        
+        
+        
+         //  A drop zone
+  
+        
+        
+   
+
+        var polygon = new Phaser.Geom.Polygon([
+        500+120, 300 +20,
+        500+260, 300 +80,
+        500+50, 300 +210,
+        500-50, 300 +110,
+    ]);
+    
+    var zone = this.add.image(500, 300, 'chest').setInteractive(polygon,function(hitArea, x, y, gameObject){
+           return choCo(hitArea, x,y,gameObject);
+    });
+        
+   
+    
+    zone.setScale(0.8);
+    zone.input.dropZone = true;
+        
+    var graphics = this.add.graphics({ x: 0, y: 0 });
+
+    graphics.lineStyle(2, 0x00aa00);
+
+    graphics.beginPath();
+
+    graphics.moveTo(polygon.points[0].x, polygon.points[0].y);
+
+    for (var i = 1; i < polygon.points.length; i++)
+    {
+        graphics.lineTo(polygon.points[i].x, polygon.points[i].y);
+    }
+
+    graphics.closePath();
+    graphics.strokePath();  
+        
+        
+        
+        
+        
+    this.input.on('dragstart', function (pointer, gameObject) {
+
+        this.children.bringToTop(gameObject);
+
+    }, this);
+
+    this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
+
+        gameObject.x = dragX;
+        gameObject.y = dragY;
+
+    });
+
+    this.input.on('dragenter', function (pointer, gameObject, dropZone) {
+
+        zone.setTint(0x00ff00);
+
+    });
+
+    this.input.on('dragleave', function (pointer, gameObject, dropZone) {
+
+        zone.clearTint();
+
+    });
+
+    this.input.on('drop', function (pointer, gameObject, dropZone) {
+
+        gameObject.x = dropZone.x;
+        gameObject.y = dropZone.y;
+        
+        
+        //gameObject.setScale(0.2);
+
+        //gameObject.input.enabled = false;
+
+        zone.clearTint();
+
+    });
+
+    this.input.on('dragend', function (pointer, gameObject, dropped) {
+
+        if (!dropped)
+        {
+            var it = searchMyClass(gameObject);
+            gameObject.x = it.xIni;
+            gameObject.y = it.yIni;
+        }
+
+    });
+        
+
+
+        
+    }
+    
+    function choCo(poly,x,y,go){
+        console.log(go);
+        return Phaser.Geom.Polygon.Contains(poly,x,y);
+
+    }
+    
+    function searchMyClass(itemm){
+        for (i = 0 ; i < itemsList.length; i++){
+            if (itemsList[i].go == itemm){
+                return itemsList[i];
+            }
+        }
+        return null;
+    }
+
+    function update ()
+    {
+        
+
+        
+    }
+    
+    
+    
+
+</script>
+
+</body>
+</html>
+
+
+
