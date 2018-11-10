@@ -43,25 +43,42 @@
             this.xIni = xIni;
             this.yIni = yIni;
             this.go = go;
+            this.myCollider = null;
+        }
+    }
+
+    class DropZone{
+        constructor(zone,name){
+            this.zone = zone;
+            this.name = name;
         }
     }
     
     var itemsList=[];
+    var zoneList=[];
     
     function preload ()
     {
-         this.load.image('ayu', 'images/objects/book1.png');
+         this.load.image('book1', 'images/objects/book1.png');
          this.load.image('chest', 'images/chest.png');
+         this.load.image("book2", 'images/objects/book2.png');
     }
     
     function create ()
     {
-            var x = 50;
-            var y = 50;
-            var image = this.add.image(x, y, 'ayu').setInteractive();
-            this.input.setDraggable(image);
-            var book1 = new Items(image,null,x,y);
-            itemsList.push(book1);
+        //items creation
+           // var x = 50;
+            //var y = 50;
+            //var image = this.add.image(x, y, 'ayu').setInteractive();
+            //this.input.setDraggable(image);
+            //var book1 = new Items(image,null,x,y);
+            //itemsList.push(book1);
+        itemCreation(50,500,'book1',this,0.8);
+        itemCreation(50,150,'book2',this,0.8);
+
+        //
+
+
             
             
         
@@ -82,15 +99,13 @@
         500+50, 300 +210,
         500-50, 300 +110,
     ]);
-    
-    var zone = this.add.image(500, 300, 'chest').setInteractive(polygon,function(hitArea, x, y, gameObject){
-           return choCo(hitArea, x,y,gameObject);
-    });
-        
-   
-    
-    zone.setScale(0.8);
-    zone.input.dropZone = true;
+    zoneCreation('chest',500,300,polygon,this,0.8);
+    //var zone = this.add.image(500, 300, 'chest').setInteractive(polygon,function(hitArea, x, y, gameObject){
+     //      return choCo(hitArea, x,y,gameObject);
+    //});
+
+    //zone.setScale(0.8);
+    //zone.input.dropZone = true;
         
     var graphics = this.add.graphics({ x: 0, y: 0 });
 
@@ -127,13 +142,13 @@
 
     this.input.on('dragenter', function (pointer, gameObject, dropZone) {
 
-        zone.setTint(0x00ff00);
+        dropZone.setTint(0x00ff00);
 
     });
 
     this.input.on('dragleave', function (pointer, gameObject, dropZone) {
 
-        zone.clearTint();
+        dropZone.clearTint();
 
     });
 
@@ -141,13 +156,14 @@
 
         gameObject.x = dropZone.x;
         gameObject.y = dropZone.y;
-        
+        console.log(zoneList);
+        searchMyClass(gameObject).myCollider = polygon;
         
         //gameObject.setScale(0.2);
 
         //gameObject.input.enabled = false;
 
-        zone.clearTint();
+        dropZone.clearTint();
 
     });
 
@@ -168,7 +184,6 @@
     }
     
     function choCo(poly,x,y,go){
-        console.log(go);
         return Phaser.Geom.Polygon.Contains(poly,x,y);
 
     }
@@ -182,11 +197,39 @@
         return null;
     }
 
+    function searchMyClassZone(zone){
+        for (i = 0 ; i < zoneList.length; i++){
+            if (zoneList[i].name == zone){
+                return zoneList[i];
+            }
+        }
+        return null;
+    }
+
     function update ()
     {
         
 
         
+    }
+
+    function itemCreation(x,y,name,proc,scale = 1 ){
+
+        var image = proc.add.image(x, y, name).setInteractive();
+        image.setScale(scale)
+        proc.input.setDraggable(image);
+        itemsList.push(new Items(image,null,x,y));
+    }
+
+    function zoneCreation(name,x,y,polygoon,fnc, scale = 1){
+        var zoned = fnc.add.image(x, y, 'chest').setInteractive(polygoon,function(hitArea, x, y, gameObject){
+            return choCo(hitArea, x,y,gameObject);
+        });
+
+        zoned.setScale(scale);
+        zoned.input.dropZone = true;
+        zoneList.push(new DropZone(zoned,name));
+
     }
     
     
