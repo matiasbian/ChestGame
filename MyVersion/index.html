@@ -38,12 +38,41 @@
     var scoreText;
     var gameReference;
     class Items{
-        constructor(go,polygon,xIni,yIni){
+        constructor(go,polygon,xIni,yIni,xOffset,yOffset,alturaBase ){
             this.polygon = polygon;
             this.xIni = xIni;
             this.yIni = yIni;
             this.go = go;
             this.myCollider = null;
+            this.their = null;
+            this.theirColliderX = null;
+            this.theirColliderY = null;
+            this.altura = 0
+            this.alturaBase = alturaBase;
+            this.xOffset = xOffset;
+            this.yOffset = yOffset;
+        }
+
+        setMyAbove(their){
+            this.theirColliderX = their.zone.x;
+            this.theirColliderY = their.zone.y;
+            this.their = their;
+            this.altura =  searchMyClassByZone(this.their.zone).altura +1 + this.alturaBase ;
+            searchMyClassByZone(this.their.zone).go.input.enabled=false;
+            console.log("AlturaNueva: " + this.altura);
+
+        }
+
+        restoreMyAbove(){
+            console.log("HABILITE AL DE ABAJO");
+            this.their.zone.x = this.theirColliderX;
+            this.their.zone.y = this.theirColliderY;
+            var zoneTemp = searchMyClassByZone(this.their.zone);
+            if (zoneTemp != null) {
+                zoneTemp.go.input.enabled = true;
+            }
+            this.altura =0;
+            console.log("Altura restaurada: " + this.altura);
         }
     }
 
@@ -63,11 +92,17 @@
          this.load.image('book1', 'images/objects/book1.png');
          this.load.image('chest', 'images/chest.png');
          this.load.image("book2", 'images/objects/book2.png');
+         this.load.image("book3", 'images/objects/book3.png');
+         this.load.image('box', 'images/objects/bx.png');
+         this.load.image('transpa', 'images/objects/transpa.png');
+         this.load.image('background', 'images/background.jpg');
     }
     
     function create ()
     {
+
         gameReference = this;
+        var background = this.add.image(400, 250, 'background');
         //items creation
            // var x = 50;
             //var y = 50;
@@ -75,9 +110,10 @@
             //this.input.setDraggable(image);
             //var book1 = new Items(image,null,x,y);
             //itemsList.push(book1);
-        itemCreation(50,500,'book1',this,0.8);
-        itemCreation(50,150,'book2',this,0.8);
-
+        itemCreation(50,500,'book1',this,0,-20,0.8);
+        itemCreation(50,150,'book2',this,0,-20,0.8);
+        itemCreation(350,150,'book3',this,0,-20,0.8);
+        itemCreation(500,150,'box',this,0,-50,0.8,5);
         //
 
 
@@ -132,7 +168,10 @@
     this.input.on('dragstart', function (pointer, gameObject) {
 
         this.children.bringToTop(gameObject);
-
+        var it = searchMyClass(gameObject);
+        if (it.myCollider != null){
+            it.myCollider.destroy();
+        }
     }, this);
 
     this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
@@ -157,17 +196,36 @@
     });
 
     this.input.on('drop', function (pointer, gameObject, dropZone) {
-
-        gameObject.x = dropZone.x;
-        gameObject.y = dropZone.y;
+        var choqueCofre = searchMyClassZone(dropZone).name == "chest"  ;
+        if (!choqueCofre) {
+            gameObject.x = dropZone.x+ searchMyClass(gameObject).xOffset;
+            gameObject.y = dropZone.y+ searchMyClass(gameObject).yOffset;
+        }
         //console.log(gameReference);
         if (searchMyClass(gameObject).myCollider != null){
             searchMyClass(gameObject).myCollider.destroy();
         }
-       searchMyClass(gameObject).myCollider =  zoneCreation('null',gameObject.x-150,gameObject.y-150,newPolygon(gameObject),gameReference,5);
-       console.log(searchMyClass(gameObject).myCollider);
+
+        if ( searchMyClass(gameObject).their != null && searchMyClass(gameObject).their != searchMyClassZone(dropZone)){
+            searchMyClass(gameObject).restoreMyAbove();
+        }
+
+        if (choqueCofre || (searchMyClassByZone(dropZone).alturaBase + searchMyClass(gameObject).alturaBase < 2 )) {
+            if (!choqueCofre){
+                console.log(searchMyClassByZone(dropZone).alturaBase);
+            }
+            searchMyClass(gameObject).myCollider = zoneCreation('transpa', gameObject.x + searchMyClass(gameObject).xOffset, gameObject.y + searchMyClass(gameObject).yOffset, newPolygon(gameObject), gameReference, 0.2);
+        }
+        if (!choqueCofre ){
+            searchMyClass(gameObject).setMyAbove(searchMyClassZone(dropZone));
+
+            searchMyClassZone(dropZone).zone.x = 9999;
+            searchMyClassZone(dropZone).zone.y = 9999;
 
 
+
+
+        }
         //gameObject.setScale(0.2);
 
         //gameObject.input.enabled = false;
@@ -183,8 +241,9 @@
             var it = searchMyClass(gameObject);
             gameObject.x = it.xIni;
             gameObject.y = it.yIni;
-            if (it.myCollider != null){
-                it.myCollider.destroy();
+
+            if (it.their != null){
+                it.restoreMyAbove();
             }
         }
 
@@ -204,6 +263,15 @@
     function searchMyClass(itemm){
         for (i = 0 ; i < itemsList.length; i++){
             if (itemsList[i].go == itemm){
+                return itemsList[i];
+            }
+        }
+        return null;
+    }
+
+    function searchMyClassByZone(zone){
+        for (i = 0 ; i < itemsList.length; i++){
+            if (itemsList[i].myCollider == zone){
                 return itemsList[i];
             }
         }
@@ -232,28 +300,14 @@
             objRef.x+50, objRef.y +210,
             objRef.x-50, objRef.y +110,
             ])
-        var graphics = gameReference.add.graphics({ x: 0, y: 0 });
 
-        graphics.lineStyle(2, 0x00aa00);
-
-        graphics.beginPath();
-
-        graphics.moveTo(polygon.points[0].x, polygon.points[0].y);
-
-        for (var i = 1; i < polygon.points.length; i++)
-        {
-            graphics.lineTo(polygon.points[i].x, polygon.points[i].y);
-        }
-
-        graphics.closePath();
-        graphics.strokePath();
     }
-    function itemCreation(x,y,name,proc,scale = 1 ){
+    function itemCreation(x,y,name,proc,xOffset = 0,yOffset = - 20,scale = 1,alturaBase = 0){
 
         var image = proc.add.image(x, y, name).setInteractive();
         image.setScale(scale)
         proc.input.setDraggable(image);
-        itemsList.push(new Items(image,null,x,y));
+        itemsList.push(new Items(image,null,x,y,xOffset,yOffset,alturaBase));
     }
 
     function zoneCreation(name,x,y,polygoon,fnc, scale = 1){
