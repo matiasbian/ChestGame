@@ -38,7 +38,7 @@
     var scoreText;
     var gameReference;
     class Items{
-        constructor(go,polygon,xIni,yIni,xOffset,yOffset,alturaBase ){
+        constructor(go,polygon,xIni,yIni,xOffset,yOffset,alturaBase,scaleCollider,colliderResbaloso ){
             this.polygon = polygon;
             this.xIni = xIni;
             this.yIni = yIni;
@@ -51,6 +51,8 @@
             this.alturaBase = alturaBase;
             this.xOffset = xOffset;
             this.yOffset = yOffset;
+            this.scaleCollider = scaleCollider;
+            this.colliderResbaloso = colliderResbaloso;
         }
 
         setMyAbove(their){
@@ -59,7 +61,7 @@
             this.their = their;
             this.altura =  searchMyClassByZone(this.their.zone).altura +1 + this.alturaBase ;
             searchMyClassByZone(this.their.zone).go.input.enabled=false;
-            console.log("AlturaNueva: " + this.altura);
+            console.log("ALTURA NUEVA " + this.altura );
 
         }
 
@@ -72,7 +74,6 @@
                 zoneTemp.go.input.enabled = true;
             }
             this.altura =0;
-            console.log("Altura restaurada: " + this.altura);
         }
     }
 
@@ -94,7 +95,13 @@
          this.load.image("book2", 'images/objects/book2.png');
          this.load.image("book3", 'images/objects/book3.png');
          this.load.image('box', 'images/objects/bx.png');
+         this.load.image('smallbox', 'images/objects/smbx.png');
          this.load.image('transpa', 'images/objects/transpa.png');
+         this.load.image('globe', 'images/objects/globe.png');
+         this.load.image('flower', 'images/objects/flower.png');
+         this.load.image('pyramid', 'images/objects/pyramid.png');
+         this.load.image('cyl', 'images/objects/cyl.png');
+        this.load.image('rec-cb', 'images/objects/rec-cb.png');
          this.load.image('background', 'images/background.jpg');
     }
     
@@ -102,7 +109,7 @@
     {
 
         gameReference = this;
-        var background = this.add.image(400, 250, 'background');
+        var background = this.add.image(400, 250, 'background').setScale(1.3);
         //items creation
            // var x = 50;
             //var y = 50;
@@ -110,10 +117,16 @@
             //this.input.setDraggable(image);
             //var book1 = new Items(image,null,x,y);
             //itemsList.push(book1);
-        itemCreation(50,500,'book1',this,0,-20,0.8);
-        itemCreation(50,150,'book2',this,0,-20,0.8);
-        itemCreation(350,150,'book3',this,0,-20,0.8);
-        itemCreation(500,150,'box',this,0,-50,0.8,5);
+        itemCreation(150,650,'book1',this,0,-10,0.6,0,0.5);
+        itemCreation(850,150,'book2',this,0,-10,0.6,0,0.5);
+        itemCreation(760,590,'book3',this,0,-10,0.6,0,0.5);
+        itemCreation(920,620,'flower',this,0,-20,0.6,0,0.3,true);
+        itemCreation(880,510,'pyramid',this,0,-20,0.6,0,0.3,true);
+        itemCreation(280,690,'globe',this,0,-20,0.6,0,0.3,true);
+        itemCreation(100,550,'smallbox',this,0,-20,0.6,0,0.4);
+        itemCreation(150,480,'cyl',this,0,-20,0.6,0,0.4,true);
+        itemCreation(900,260,'box',this,0,-50,0.6,3,0.9);
+        itemCreation(700,150,'rec-cb',this,0,-10,0.6,0,0.7);
         //
 
 
@@ -129,13 +142,14 @@
   
         
         
-   
+        var offset = 480;
+        var offsety = 280;
 
         var polygon = new Phaser.Geom.Polygon([
-        500+120, 300 +20,
-        500+260, 300 +80,
-        500+50, 300 +210,
-        500-50, 300 +110,
+        offset+120, offsety +45,
+        offset+270, offsety +105,
+        offset+80, offsety +215,
+        offset-60, offsety +135,
     ]);
     zoneCreation('chest',500,300,polygon,this,0.8);
     //var zone = this.add.image(500, 300, 'chest').setInteractive(polygon,function(hitArea, x, y, gameObject){
@@ -172,6 +186,8 @@
         if (it.myCollider != null){
             it.myCollider.destroy();
         }
+        gameObject.x = pointer.x;
+        gameObject.y = pointer.y;
     }, this);
 
     this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
@@ -200,23 +216,28 @@
         if (!choqueCofre) {
             gameObject.x = dropZone.x+ searchMyClass(gameObject).xOffset;
             gameObject.y = dropZone.y+ searchMyClass(gameObject).yOffset;
+            if (searchMyClassByZone(dropZone).colliderResbaloso){
+                gameObject.x = searchMyClass(gameObject).xIni;
+                gameObject.y = searchMyClass(gameObject).yIni;
+            }
         }
+       
         //console.log(gameReference);
-        if (searchMyClass(gameObject).myCollider != null){
+        if (searchMyClass(gameObject).myCollider != null && !choqueCofre && !searchMyClassByZone(dropZone).colliderResbaloso){
             searchMyClass(gameObject).myCollider.destroy();
         }
 
-        if ( searchMyClass(gameObject).their != null && searchMyClass(gameObject).their != searchMyClassZone(dropZone)){
+        if ( searchMyClass(gameObject).their != null  && searchMyClass(gameObject).their != searchMyClassZone(dropZone) && !searchMyClassByZone(dropZone).colliderResbaloso){
             searchMyClass(gameObject).restoreMyAbove();
         }
+        
 
-        if (choqueCofre || (searchMyClassByZone(dropZone).alturaBase + searchMyClass(gameObject).alturaBase < 2 )) {
-            if (!choqueCofre){
-                console.log(searchMyClassByZone(dropZone).alturaBase);
-            }
-            searchMyClass(gameObject).myCollider = zoneCreation('transpa', gameObject.x + searchMyClass(gameObject).xOffset, gameObject.y + searchMyClass(gameObject).yOffset, newPolygon(gameObject), gameReference, 0.2);
+        if (choqueCofre || (searchMyClassByZone(dropZone).alturaBase + searchMyClass(gameObject).alturaBase + searchMyClassByZone(dropZone).altura < 2 ) && !searchMyClassByZone(dropZone).colliderResbaloso) {
+
+            searchMyClass(gameObject).myCollider = zoneCreation('transpa', gameObject.x + searchMyClass(gameObject).xOffset, gameObject.y + searchMyClass(gameObject).yOffset, newPolygon(gameObject), gameReference, 0.2* searchMyClass(gameObject).scaleCollider);
+             
         }
-        if (!choqueCofre ){
+        if (!choqueCofre && !searchMyClassByZone(dropZone).colliderResbaloso){
             searchMyClass(gameObject).setMyAbove(searchMyClassZone(dropZone));
 
             searchMyClassZone(dropZone).zone.x = 9999;
@@ -302,12 +323,12 @@
             ])
 
     }
-    function itemCreation(x,y,name,proc,xOffset = 0,yOffset = - 20,scale = 1,alturaBase = 0){
+    function itemCreation(x,y,name,proc,xOffset = 0,yOffset = - 20,scale = 1,alturaBase = 0,scaleCollider = 1, colliderResbaloso = false){
 
         var image = proc.add.image(x, y, name).setInteractive();
         image.setScale(scale)
         proc.input.setDraggable(image);
-        itemsList.push(new Items(image,null,x,y,xOffset,yOffset,alturaBase));
+        itemsList.push(new Items(image,null,x,y,xOffset,yOffset,alturaBase,scaleCollider,colliderResbaloso));
     }
 
     function zoneCreation(name,x,y,polygoon,fnc, scale = 1){
