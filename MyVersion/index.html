@@ -54,6 +54,7 @@
             this.scaleCollider = scaleCollider;
             this.colliderResbaloso = colliderResbaloso;
             this.estoyEnConfre = false;
+            this.TengoAbajo = false;
         }
 
         setMyAbove(their){
@@ -63,6 +64,7 @@
             this.altura =  searchMyClassByZone(this.their.zone).altura +1 + this.alturaBase ;
             searchMyClassByZone(this.their.zone).go.input.enabled=false;
             console.log("ALTURA NUEVA " + this.altura );
+            this.TengoAbajo = true;
 
         }
 
@@ -75,7 +77,19 @@
                 zoneTemp.go.input.enabled = true;
             }
             this.altura =0;
+            this.TengoAbajo = false;
         }
+
+        myPolArea(){
+
+            var polResult = [];
+            for (var i = 0; i < this.polygon.points.length ; i++){
+                polResult.push ( new Phaser.Geom.Point(this.polygon.points[i].x + this.go.x,this.polygon.points[i].y + this.go.y));
+            }
+            return new Phaser.Geom.Polygon(polResult);
+        }
+
+
     }
 
     class DropZone{
@@ -93,6 +107,7 @@
     {
          this.load.image('book1', 'images/objects/book1.png');
          this.load.image('chest', 'images/chest.png');
+         this.load.image('chestFront', 'images/chest-front.png');
          this.load.image("book2", 'images/objects/book2.png');
          this.load.image("book3", 'images/objects/book3.png');
          this.load.image('box', 'images/objects/bx.png');
@@ -109,8 +124,116 @@
     function create ()
     {
 
+        var offset = 240;
+        var offsety = 550;
+
+        var polygoon = new Phaser.Geom.Polygon([ // Book1
+             -73,  +20,
+            -25,  +50,
+            +50, +0 ,
+            +5,  -20,
+        ]);
+
+
+
+        offset = 99;
+        offsety = -42;
+
+        var polygoon2 = new Phaser.Geom.Polygon([ // Book3
+             -170 +offset,  +60 + offsety ,
+            -120+offset,  +90  +offsety,
+            -35+offset, +45 + offsety ,
+            -80+offset,  +10 + offsety,
+        ]);
+
+
+        offset = 118;
+        offsety = -52;
+
+        var polygoon3 = new Phaser.Geom.Polygon([ // Book2
+            -170 +offset,  +60 + offsety ,
+            -125+offset,  +90  +offsety,
+            -65+offset, +55 + offsety ,
+            -103+offset,  +28 + offsety,
+        ]);
+
+        offset = 118;
+        offsety = -52;
+
+        var polygoon4 = new Phaser.Geom.Polygon([ // flower
+            -150 +offset,  +60 + offsety ,
+            -125+offset,  +83  +offsety,
+            -93+offset, +55 + offsety ,
+            -116+offset,  +43 + offsety,
+        ]);
+
+        offset = 118;
+        offsety = -52;
+
+        var polygoon5 = new Phaser.Geom.Polygon([ // pyramid
+            -160 +offset,  +60 + offsety ,
+            -125+offset,  +83  +offsety,
+            -93+offset, +55 + offsety ,
+            -125+offset,  +38 + offsety,
+        ]);
+
+        offset = 118;
+        offsety = -52;
+
+        var polygoon6 = new Phaser.Geom.Polygon([ // globe
+            -150 +offset,  +60 + offsety ,
+            -125+offset,  +83  +offsety,
+            -83+offset, +55 + offsety ,
+            -116+offset,  +43 + offsety,
+        ]);
+
+        offset = 118;
+        offsety = -52;
+
+        var polygoon7 = new Phaser.Geom.Polygon([ // smallBox
+            -160 +offset,  +60 + offsety ,
+            -125+offset,  +83  +offsety,
+            -86+offset, +65 + offsety ,
+            -120+offset,  +45 + offsety,
+        ]);
+
+        offset = 118;
+        offsety = -52;
+
+        var polygoon8 = new Phaser.Geom.Polygon([ // Cylinder
+            -160 +offset,  +70 + offsety ,
+            -143+offset,  +83  +offsety,
+            -79+offset, +52 + offsety ,
+            -103+offset,  +48 + offsety,
+        ]);
+
+        offset = 118;
+        offsety = -52;
+
+        var polygoon9 = new Phaser.Geom.Polygon([ // Box
+            -185 +offset,  +86 + offsety ,
+            -125+offset,  +123  +offsety,
+            -55+offset, +86 + offsety ,
+            -120+offset,  +50 + offsety,
+        ]);
+
+        offset = 118;
+        offsety = -52;
+
+        var polygoon10 = new Phaser.Geom.Polygon([ // Cylinder
+            -173 +offset,  +80 + offsety ,
+            -143+offset,  +99  +offsety,
+            -60+offset, +52 + offsety ,
+            -90+offset,  +48 + offsety,
+        ]);
+
+
+
         gameReference = this;
         var background = this.add.image(400, 250, 'background').setScale(1.3);
+        var front = this.add.image(586, 400, 'chestFront').setScale(0.8);
+        front.depth = 500;
+
         //items creation
            // var x = 50;
             //var y = 50;
@@ -118,21 +241,21 @@
             //this.input.setDraggable(image);
             //var book1 = new Items(image,null,x,y);
             //itemsList.push(book1);
-        itemCreation(150,650,'book1',this,0,-10,0.6,0,0.5);
-        itemCreation(850,150,'book2',this,0,-10,0.6,0,0.5);
-        itemCreation(760,590,'book3',this,0,-10,0.6,0,0.5);
-        itemCreation(920,620,'flower',this,0,-20,0.6,0,0.3,true);
-        itemCreation(880,510,'pyramid',this,0,-20,0.6,0,0.3,true);
-        itemCreation(280,690,'globe',this,0,-20,0.6,0,0.3,true);
-        itemCreation(100,550,'smallbox',this,0,-20,0.6,0,0.4);
-        itemCreation(150,480,'cyl',this,0,-20,0.6,0,0.4,true);
-        itemCreation(900,260,'box',this,0,-50,0.6,3,0.9);
-        itemCreation(700,150,'rec-cb',this,0,-10,0.6,0,0.7);
+        itemCreation(240,550,'book1',this,0,-10,0.6,0,0.5,false,polygoon);
+        itemCreation(850,150,'book2',this,0,-10,0.6,0,0.5,false,polygoon3);
+        itemCreation(760,590,'book3',this,0,-10,0.6,0,0.5,false,polygoon2);
+        itemCreation(920,620,'flower',this,0,-20,0.6,0,0.3,true,polygoon4);
+        itemCreation(880,510,'pyramid',this,0,-20,0.6,0,0.3,true,polygoon5);
+        itemCreation(340,550,'globe',this,0,-20,0.6,0,0.3,true,polygoon6);
+        itemCreation(100,550,'smallbox',this,0,-20,0.6,0,0.4,false,polygoon7);
+        itemCreation(150,480,'cyl',this,0,-20,0.6,0,0.4,true,polygoon8);
+        itemCreation(900,260,'box',this,0,-50,0.6,3,0.9,false,polygoon9);
+        itemCreation(700,150,'rec-cb',this,0,-10,0.6,0,0.7,false,polygoon10);
         //
 
 
-            
-            
+
+        //
         
         
         
@@ -143,24 +266,27 @@
   
         
         
-        var offset = 480;
-        var offsety = 280;
+         offset = 480;
+         offsety = 280;
 
-        var polygon = new Phaser.Geom.Polygon([
-        offset+120, offsety -15,
-        offset+270, offsety +105,
-        offset+0, offsety +215,
-        offset-140, offsety +135,
-    ]);
-    zoneCreation('chest',500,300,polygon,this,0.8);
+
     //var zone = this.add.image(500, 300, 'chest').setInteractive(polygon,function(hitArea, x, y, gameObject){
      //      return choCo(hitArea, x,y,gameObject);
     //});
 
     //zone.setScale(0.8);
     //zone.input.dropZone = true;
-        
-    var graphics = this.add.graphics({ x: 0, y: 0 });
+
+        var polygon = new Phaser.Geom.Polygon([
+            offset+120, offsety -15,
+            offset+270, offsety +105,
+            offset+0, offsety +215,
+            offset-140, offsety +135,
+        ]);
+
+        zoneCreation('chest',500,300,polygon,this,0.8);
+
+        var graphics = this.add.graphics({ x: 0, y: 0 });
 
     graphics.lineStyle(2, 0x00aa00);
 
@@ -178,9 +304,32 @@
         
     graphics.lineStyle(2, 0x115f55);
     
-    
-        
-        
+    //-----------------------------
+
+        graphics.lineStyle(2, 0x00aa00);
+
+        graphics.beginPath();
+
+        graphics.moveTo(polygoon2.points[0].x, polygoon2.points[0].y);
+
+        for (var i = 1; i < polygoon2.points.length; i++)
+        {
+            graphics.lineTo(polygoon2.points[i].x, polygoon2.points[i].y);
+        }
+
+        graphics.closePath();
+        graphics.strokePath();
+
+        graphics.lineStyle(2, 0x115f55);
+
+
+
+
+
+
+
+
+
         
         
         
@@ -194,12 +343,16 @@
         }
         gameObject.x = pointer.x - gameObject.displayWidth/4;
         gameObject.y = pointer.y + gameObject.displayHeight/4;
+
+        //Polygon(searchMyClass(gameObject).myPolArea(),gameReference);
+
+
     }, this);
 
     this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
 
-        gameObject.x = pointer.x - gameObject.displayWidth/4;
-        gameObject.y = pointer.y + gameObject.displayHeight/4;
+        gameObject.x = pointer.x - gameObject.displayWidth/9;
+        gameObject.y = pointer.y + gameObject.displayHeight/9;
 
     });
 
@@ -231,9 +384,15 @@
                 searchMyClass(gameObject).estoyEnConfre = false;
             }
         }else{
-             if (!AboveOtherObject(gameObject) ){
-                
-            }
+             if (!AboveOtherObject(gameObject,gameReference) ){
+                console.log("NOTOY EN OTRO OBJETO");
+            }else{
+                 console.log("TOY EN OTRO OBJETO");
+                 var it = searchMyClass(gameObject);
+                 gameObject.x = it.xIni;
+                 gameObject.y = it.yIni;
+                 return;
+             }
         }
         
        
@@ -251,21 +410,22 @@
         if (choqueCofre || (searchMyClassByZone(dropZone).alturaBase + searchMyClass(gameObject).alturaBase + searchMyClassByZone(dropZone).altura < 2 ) && !searchMyClassByZone(dropZone).colliderResbaloso) {
 
             var colo = searchMyClass(gameObject).myCollider = zoneCreation('transpa', gameObject.x + searchMyClass(gameObject).xOffset, gameObject.y + searchMyClass(gameObject).yOffset, newPolygon(gameObject), gameReference, 0.2* searchMyClass(gameObject).scaleCollider);
+            console.log(searchMyClass(gameObject).myCollider.depth = 99999);
             searchMyClass(gameObject).estoyEnConfre = true;
             //console.log(Phaser.Geom.Rectangle.ContainsRect());
             //console.log(colo.input.hitArea);
              
         }
-        if (!choqueCofre && !searchMyClassByZone(dropZone).colliderResbaloso){
+        if (!choqueCofre && !searchMyClassByZone(dropZone).colliderResbaloso ){
             searchMyClass(gameObject).setMyAbove(searchMyClassZone(dropZone));
-
+            gameObject.depth = searchMyClassByZone(dropZone).go.z +500 ;
             searchMyClassZone(dropZone).zone.x = 9999;
             searchMyClassZone(dropZone).zone.y = 9999;
 
 
-
-
         }
+
+
         //gameObject.setScale(0.2);
 
         //gameObject.input.enabled = false;
@@ -284,6 +444,11 @@
             it.estoyEnConfre = false;
             if (it.their != null){
                 it.restoreMyAbove();
+            }
+        }else{
+            if (! searchMyClass(gameObject).TengoAbajo) {
+                gameObject.depth = gameObject.y;
+                console.log("ETNRE");
             }
         }
 
@@ -342,12 +507,12 @@
             ])
 
     }
-    function itemCreation(x,y,name,proc,xOffset = 0,yOffset = - 20,scale = 1,alturaBase = 0,scaleCollider = 1, colliderResbaloso = false){
+    function itemCreation(x,y,name,proc,xOffset = 0,yOffset = - 20,scale = 1,alturaBase = 0,scaleCollider = 1, colliderResbaloso = false,polygoon = null){
 
         var image = proc.add.image(x, y, name).setInteractive();
         image.setScale(scale)
         proc.input.setDraggable(image);
-        itemsList.push(new Items(image,null,x,y,xOffset,yOffset,alturaBase,scaleCollider,colliderResbaloso));
+        itemsList.push(new Items(image,polygoon,x,y,xOffset,yOffset,alturaBase,scaleCollider,colliderResbaloso));
     }
 
     function zoneCreation(name,x,y,polygoon,fnc, scale = 1){
@@ -361,12 +526,23 @@
         return zoned;
     }
     
-    function AboveOtherObject(gameObject){
+    function AboveOtherObject(gameObject, create){
         
-        
+        var myclase = searchMyClass(gameObject);
         for (i = 0 ; i < itemsList.length; i++){
-            if (itemsList[i].estoyEnConfre){
-                
+            if (itemsList[i].estoyEnConfre && (itemsList[i] != myclase  )){
+               // drawPolygon(itemsList[i].myPolArea(),create);
+                //drawPolygon(myclase.myPolArea(),create);
+                for (var j= 0; j < myclase.myPolArea().points.length ; j++){
+                    if (Phaser.Geom.Polygon.ContainsPoint(itemsList[i].myPolArea(),myclase.myPolArea().points[j]) ){
+
+                        return true;
+                    }
+
+                }
+
+                console.log(myclase.myPolArea());
+                console.log(itemsList[i].myPolArea());
                 //console.log(gameObject.input.hitArea);
                // console.log (gameObject)
                // console.log (rect);
@@ -375,6 +551,26 @@
             }
         }
         return false;
+    }
+
+    function drawPolygon(polygon,create){
+        var graphics = create.add.graphics({ x: 0, y: 0 });
+
+        graphics.lineStyle(2, 0x00aa00);
+
+        graphics.beginPath();
+
+        graphics.moveTo(polygon.points[0].x, polygon.points[0].y);
+
+        for (var i = 1; i < polygon.points.length; i++)
+        {
+            graphics.lineTo(polygon.points[i].x, polygon.points[i].y);
+        }
+
+        graphics.closePath();
+        graphics.strokePath();
+
+        graphics.lineStyle(2, 0x115f55);
     }
     
     
