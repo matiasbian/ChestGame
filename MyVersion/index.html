@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <title>Making your first Phaser 3 Game - Part 1</title>
     <script src="//cdn.jsdelivr.net/npm/phaser@3.11.0/dist/phaser.js"></script>
+    <script src ="GameManager.js"></script>
     <style type="text/css">
         body {
             margin: 0;
@@ -37,6 +38,10 @@
     var score = 0;
     var scoreText;
     var gameReference;
+    var gameManager;
+    var time;
+    var lose;
+    var win;
     class Items{
         constructor(go,polygon,xIni,yIni,xOffset,yOffset,alturaBase,scaleCollider,colliderResbaloso ){
             this.polygon = polygon;
@@ -123,6 +128,15 @@
     
     function create ()
     {
+        // ui
+
+        gameManager = new GameManager(10 ,this,60);
+        gameManager.StartTimer();
+        time = this.add.text(100,100 ,gameManager.time, { font: "74px Arial Black"});
+        time.depth = 1;
+        lose = this.add.text(200,50,"You Lose",{ font: "74px Arial Black"});
+        win = this.add.text(200,50 ,"You win" , { font: "74px Arial Black"});
+
 
         var offset = 240;
         var offsety = 550;
@@ -385,9 +399,7 @@
             }
         }else{
              if (!AboveOtherObject(gameObject,gameReference) ){
-                console.log("NOTOY EN OTRO OBJETO");
             }else{
-                 console.log("TOY EN OTRO OBJETO");
                  var it = searchMyClass(gameObject);
                  gameObject.x = it.xIni;
                  gameObject.y = it.yIni;
@@ -410,7 +422,6 @@
         if (choqueCofre || (searchMyClassByZone(dropZone).alturaBase + searchMyClass(gameObject).alturaBase + searchMyClassByZone(dropZone).altura < 2 ) && !searchMyClassByZone(dropZone).colliderResbaloso) {
 
             var colo = searchMyClass(gameObject).myCollider = zoneCreation('transpa', gameObject.x + searchMyClass(gameObject).xOffset, gameObject.y + searchMyClass(gameObject).yOffset, newPolygon(gameObject), gameReference, 0.2* searchMyClass(gameObject).scaleCollider);
-            console.log(searchMyClass(gameObject).myCollider.depth = 99999);
             searchMyClass(gameObject).estoyEnConfre = true;
             //console.log(Phaser.Geom.Rectangle.ContainsRect());
             //console.log(colo.input.hitArea);
@@ -431,6 +442,7 @@
         //gameObject.input.enabled = false;
 
         dropZone.clearTint();
+        console.log(cantidadEnCofre());
 
     });
 
@@ -442,6 +454,7 @@
             gameObject.x = it.xIni;
             gameObject.y = it.yIni;
             it.estoyEnConfre = false;
+
             if (it.their != null){
                 it.restoreMyAbove();
             }
@@ -495,7 +508,14 @@
     function update ()
     {
         
+     time.setText(gameManager.time)
+        if (gameManager.YouLose() && !gameManager.Winner()){
+            lose.depth = 1
+        }
+        if (gameManager.Winner() && !gameManager.YouLose()){
 
+            win.depth = 1
+        }
         
     }
     function newPolygon(objRef){
@@ -524,6 +544,19 @@
         zoned.input.dropZone = true;
         zoneList.push(new DropZone(zoned,name));
         return zoned;
+    }
+
+    function cantidadEnCofre( ) {
+
+        var acum = 0;
+        for (i = 0; i < itemsList.length; i++) {
+            if (itemsList[i].estoyEnConfre){
+                acum ++;
+
+            }
+        }
+        gameManager.setAmount(acum);
+        return acum;
     }
     
     function AboveOtherObject(gameObject, create){
