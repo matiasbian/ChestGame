@@ -60,6 +60,7 @@
             this.colliderResbaloso = colliderResbaloso;
             this.estoyEnConfre = false;
             this.TengoAbajo = false;
+            
         }
 
         setMyAbove(their){
@@ -68,13 +69,11 @@
             this.their = their;
             this.altura =  searchMyClassByZone(this.their.zone).altura +1 + this.alturaBase ;
             searchMyClassByZone(this.their.zone).go.input.enabled=false;
-            console.log("ALTURA NUEVA " + this.altura );
             this.TengoAbajo = true;
 
         }
 
         restoreMyAbove(){
-            console.log("HABILITE AL DE ABAJO");
             this.their.zone.x = this.theirColliderX;
             this.their.zone.y = this.theirColliderY;
             var zoneTemp = searchMyClassByZone(this.their.zone);
@@ -102,6 +101,7 @@
             this.zone = zone;
             this.name = name;
             this.altura = altura;
+            this.ObjetosOverMe = [];
         }
     }
     
@@ -390,13 +390,15 @@
     this.input.on('drop', function (pointer, gameObject, dropZone) {
         var choqueCofre = searchMyClassZone(dropZone).name == "chest"  ;
         if (!choqueCofre) {
-            gameObject.x = dropZone.x+ searchMyClass(gameObject).xOffset;
-            gameObject.y = dropZone.y+ searchMyClass(gameObject).yOffset;
+           // gameObject.x = dropZone.x+ searchMyClass(gameObject).xOffset;
+            //gameObject.y = dropZone.y+ searchMyClass(gameObject).yOffset;
             if (searchMyClassByZone(dropZone).colliderResbaloso ){
                 gameObject.x = searchMyClass(gameObject).xIni;
                 gameObject.y = searchMyClass(gameObject).yIni;
                 searchMyClass(gameObject).estoyEnConfre = false;
             }
+            
+            
         }else{
              if (!AboveOtherObject(gameObject,gameReference) ){
             }else{
@@ -423,26 +425,46 @@
 
             var colo = searchMyClass(gameObject).myCollider = zoneCreation('transpa', gameObject.x + searchMyClass(gameObject).xOffset, gameObject.y + searchMyClass(gameObject).yOffset, newPolygon(gameObject), gameReference, 0.2* searchMyClass(gameObject).scaleCollider);
             searchMyClass(gameObject).estoyEnConfre = true;
+            searchMyClass(gameObject).myCollider.depth = searchMyClass(gameObject).go.z +999;
             //console.log(Phaser.Geom.Rectangle.ContainsRect());
             //console.log(colo.input.hitArea);
              
         }
         if (!choqueCofre && !searchMyClassByZone(dropZone).colliderResbaloso ){
+            
+            if (AboveOtherObjectV2(gameObject,searchMyClassZone(dropZone).ObjetosOverMe) ){
+                 var it = searchMyClass(gameObject);
+                 gameObject.x = it.xIni;
+                 gameObject.y = it.yIni;
+                 return;
+            }
+            
+            
+            
             searchMyClass(gameObject).setMyAbove(searchMyClassZone(dropZone));
-            gameObject.depth = searchMyClassByZone(dropZone).go.z +500 ;
-            searchMyClassZone(dropZone).zone.x = 9999;
-            searchMyClassZone(dropZone).zone.y = 9999;
+            if (!searchMyClassZone(dropZone).ObjetosOverMe.includes(searchMyClass(gameObject))){
+            searchMyClassZone(dropZone).ObjetosOverMe.push(searchMyClass(gameObject));
+            }
+            gameObject.depth = searchMyClassByZone(dropZone).go.z +50000 ;
+            
+            
+           
+            
+            
+            //searchMyClassZone(dropZone).zone.x = 9999;
+            //searchMyClassZone(dropZone).zone.y = 9999;
 
 
         }
 
+        
+        
 
         //gameObject.setScale(0.2);
 
         //gameObject.input.enabled = false;
 
         dropZone.clearTint();
-        console.log(cantidadEnCofre());
 
     });
 
@@ -457,11 +479,12 @@
 
             if (it.their != null){
                 it.restoreMyAbove();
+                console.log(it.their.ObjetosOverMe);
+                meQuitoDeSuLista(it,it.their.ObjetosOverMe);
             }
         }else{
             if (! searchMyClass(gameObject).TengoAbajo) {
                 gameObject.depth = gameObject.y;
-                console.log("ETNRE");
             }
         }
 
@@ -541,6 +564,7 @@
         });
 
         zoned.setScale(scale);
+        //zoned.depth = 
         zoned.input.dropZone = true;
         zoneList.push(new DropZone(zoned,name));
         return zoned;
@@ -569,6 +593,34 @@
                 for (var j= 0; j < myclase.myPolArea().points.length ; j++){
                     if (Phaser.Geom.Polygon.ContainsPoint(itemsList[i].myPolArea(),myclase.myPolArea().points[j]) ){
 
+                        return true;
+                    }
+
+                }
+
+
+                //console.log(gameObject.input.hitArea);
+               // console.log (gameObject)
+               // console.log (rect);
+               // console.log (rect2);
+               // console.log(Phaser.Geom.Rectangle.Overlaps(rect,rect2) );
+            }
+        }
+        return false;
+    }
+    
+    
+    function AboveOtherObjectV2(gameObject,  listado){
+        
+        var myclase = searchMyClass(gameObject);
+        for (i = 0 ; i < listado.length; i++){
+            if ( (listado[i] != myclase  )){
+               // drawPolygon(itemsList[i].myPolArea(),create);
+                //drawPolygon(myclase.myPolArea(),create);
+                for (var j= 0; j < myclase.myPolArea().points.length ; j++){
+                    
+                    if (Phaser.Geom.Polygon.ContainsPoint(itemsList[i].myPolArea(),myclase.myPolArea().points[j]) ){
+                        console.log("INGRESE?");
                         return true;
                     }
 
@@ -604,6 +656,16 @@
         graphics.strokePath();
 
         graphics.lineStyle(2, 0x115f55);
+    }
+    
+    function meQuitoDeSuLista(it,suLista){
+        console.log("long vieja: " + suLista.length);
+        var listado = suLista.filter(function (e){
+            return e != it;
+        })
+        it.their.ObjetosOverMe = listado;
+        console.log("long nueva: " +it.their.ObjetosOverMe.length);
+        
     }
     
     
