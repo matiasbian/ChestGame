@@ -255,16 +255,16 @@
             //this.input.setDraggable(image);
             //var book1 = new Items(image,null,x,y);
             //itemsList.push(book1);
-        itemCreation(240,550,'book1',this,0,-10,0.6,0,0.5,false,polygoon);
-        itemCreation(850,150,'book2',this,0,-10,0.6,0,0.5,false,polygoon3);
-        itemCreation(760,590,'book3',this,0,-10,0.6,0,0.5,false,polygoon2);
+        itemCreation(240,550,'book1',this,0,-20,0.6,0,0.4,false,polygoon);
+        itemCreation(850,150,'book2',this,0,-20,0.6,0,0.4,false,polygoon3);
+        itemCreation(760,590,'book3',this,0,-20,0.6,0,0.4,false,polygoon2);
         itemCreation(920,620,'flower',this,0,-20,0.6,0,0.3,true,polygoon4);
         itemCreation(880,510,'pyramid',this,0,-20,0.6,0,0.3,true,polygoon5);
         itemCreation(340,550,'globe',this,0,-20,0.6,0,0.3,true,polygoon6);
         itemCreation(100,550,'smallbox',this,0,-20,0.6,0,0.4,false,polygoon7);
         itemCreation(150,480,'cyl',this,0,-20,0.6,0,0.4,true,polygoon8);
-        itemCreation(900,260,'box',this,0,-50,0.6,3,0.9,false,polygoon9);
-        itemCreation(700,150,'rec-cb',this,0,-10,0.6,0,0.7,false,polygoon10);
+        itemCreation(900,260,'box',this,0,-70,0.6,3,0.6,false,polygoon9);
+        itemCreation(700,150,'rec-cb',this,0,-20,0.6,0,0.6,false,polygoon10);
         //
 
 
@@ -416,7 +416,7 @@
             
         }
 
-        if ( searchMyClass(gameObject).their != null  && searchMyClass(gameObject).their != searchMyClassZone(dropZone) && !searchMyClassByZone(dropZone).colliderResbaloso){
+        if ( searchMyClass(gameObject).their != null  && searchMyClass(gameObject).their != searchMyClassZone(dropZone) &&  searchMyClassByZone(dropZone) != null  &&!searchMyClassByZone(dropZone).colliderResbaloso){
             searchMyClass(gameObject).restoreMyAbove();
         }
         
@@ -425,7 +425,7 @@
 
             var colo = searchMyClass(gameObject).myCollider = zoneCreation('transpa', gameObject.x + searchMyClass(gameObject).xOffset, gameObject.y + searchMyClass(gameObject).yOffset, newPolygon(gameObject), gameReference, 0.2* searchMyClass(gameObject).scaleCollider);
             searchMyClass(gameObject).estoyEnConfre = true;
-            searchMyClass(gameObject).myCollider.depth = searchMyClass(gameObject).go.z +999;
+            searchMyClass(gameObject).myCollider.depth = searchMyClass(gameObject).go.z +6000;
             //console.log(Phaser.Geom.Rectangle.ContainsRect());
             //console.log(colo.input.hitArea);
              
@@ -445,7 +445,7 @@
             if (!searchMyClassZone(dropZone).ObjetosOverMe.includes(searchMyClass(gameObject))){
             searchMyClassZone(dropZone).ObjetosOverMe.push(searchMyClass(gameObject));
             }
-            gameObject.depth = searchMyClassByZone(dropZone).go.z +50000 ;
+            gameObject.depth = searchMyClassByZone(dropZone).go.z +5000 ;
             
             
            
