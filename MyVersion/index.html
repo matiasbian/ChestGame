@@ -354,7 +354,7 @@
      //   graphics.strokePath();
 //
      //   graphics.lineStyle(2, 0x115f55);
-
+    var dragEnta;
 
 
 
@@ -387,28 +387,29 @@
 
         gameObject.x = pointer.x - gameObject.displayWidth/9;
         gameObject.y = pointer.y + gameObject.displayHeight/9;
-        
+
         if (AboveOtherObject(gameObject,gameReference) && !colaidin ){
-                gameObject.setTint(0xff3333);
-            }else if (colaidin  ){
-                if (!ultimoIngresado.colliderResbaloso){
-                    gameObject.setTint(0x00AAAA);
-                }else{
-                    
-                    gameObject.setTint(0xff3333);
-                }
+            gameObject.setTint(0xff3333);
+        }else if (colaidin  ){
+            if (!ultimoIngresado.colliderResbaloso && !AboveOtherObjectV2(gameObject,dragEnta.ObjetosOverMe) ){
+                gameObject.setTint(0x00AAAA);
             }else{
-                if (AboveChest(gameObject,gameReference,polygon)){
-                    gameObject.setTint(0x00ff00);
-                }else{
-                    gameObject.clearTint();
-                }
+
+                gameObject.setTint(0xff3333);
             }
+        }else{
+            if (AboveChest(gameObject,gameReference,polygon)){
+                gameObject.setTint(0x00ff00);
+            }else{
+                gameObject.clearTint();
+            }
+        }
 
     });
 
     this.input.on('dragenter', function (pointer, gameObject, dropZone) {
         ultimoIngresado = searchMyClassByZone(dropZone);
+        dragEnta = searchMyClassZone(dropZone);
         if(searchMyClassZone(dropZone).name == "chest"){
             if (AboveOtherObject(gameObject,gameReference)){
                 //gameObject.setTint(0xff3333);
@@ -483,6 +484,13 @@
                  var it = searchMyClass(gameObject);
                  gameObject.x = it.xIni;
                  gameObject.y = it.yIni;
+                searchMyClass(gameObject).estoyEnConfre = false;
+                if (it.their != null){
+                    it.restoreMyAbove();
+                    meQuitoDeSuLista(it,it.their.ObjetosOverMe);
+                }
+                it.myCollider.destroy();
+                 console.log("SALI POR ESTA ENTRADA");
                  return;
             }
             

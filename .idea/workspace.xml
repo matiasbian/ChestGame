@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0e189b41-5849-4331-9e1e-35dc6fd897ee" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/MyVersion/GameManager.js" beforeDir="false" afterPath="$PROJECT_DIR$/MyVersion/GameManager.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MyVersion/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/MyVersion/index.html" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
@@ -49,23 +48,45 @@
         </counts>
       </usages-collector>
     </session>
+    <session id="2067735828">
+      <usages-collector id="statistics.lifecycle.project">
+        <counts>
+          <entry key="project.closed" value="2" />
+          <entry key="project.open.time.10" value="1" />
+          <entry key="project.open.time.14" value="1" />
+          <entry key="project.open.time.20" value="1" />
+          <entry key="project.opened" value="3" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.edit">
+        <counts>
+          <entry key="html" value="392" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.edit">
+        <counts>
+          <entry key="HTML" value="392" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.open">
+        <counts>
+          <entry key="html" value="1" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.open">
+        <counts>
+          <entry key="HTML" value="1" />
+        </counts>
+      </usages-collector>
+    </session>
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/MyVersion/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="329">
-              <caret line="514" column="58" selection-start-line="514" selection-start-column="58" selection-end-line="514" selection-end-column="58" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/MyVersion/GameManager.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="527">
-              <caret line="31" column="30" selection-start-line="31" selection-start-column="30" selection-end-line="31" selection-end-column="30" />
+            <state relative-caret-position="241">
+              <caret line="482" column="91" lean-forward="true" selection-start-line="482" selection-start-column="91" selection-end-line="482" selection-end-column="91" />
             </state>
           </provider>
         </entry>
@@ -81,6 +102,7 @@
       <find>ad</find>
       <find>game</find>
       <find>gameMana</find>
+      <find>restore</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -101,11 +123,12 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="10" />
-    <option name="y" value="25" />
+    <option name="x" value="9" />
+    <option name="y" value="24" />
     <option name="width" value="1725" />
-    <option name="height" value="1030" />
+    <option name="height" value="1032" />
   </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
@@ -181,17 +204,20 @@
       <updated>1542233837098</updated>
       <workItem from="1542233838830" duration="1696000" />
       <workItem from="1542580422762" duration="3493000" />
+      <workItem from="1542995203898" duration="124000" />
+      <workItem from="1543420798288" duration="139000" />
+      <workItem from="1543523062103" duration="2915000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="5189000" />
+    <option name="totallyTimeSpent" value="8367000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-7" y="-7" width="1442" height="878" extended-state="6" />
+    <frame x="-7" y="-7" width="1233" height="735" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.24982207" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.24916388" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -219,15 +245,15 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/MyVersion/GameManager.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="527">
+        <state relative-caret-position="520">
           <caret line="31" column="30" selection-start-line="31" selection-start-column="30" selection-end-line="31" selection-end-column="30" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/MyVersion/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="329">
-          <caret line="514" column="58" selection-start-line="514" selection-start-column="58" selection-end-line="514" selection-end-column="58" />
+        <state relative-caret-position="241">
+          <caret line="482" column="91" lean-forward="true" selection-start-line="482" selection-start-column="91" selection-end-line="482" selection-end-column="91" />
         </state>
       </provider>
     </entry>
