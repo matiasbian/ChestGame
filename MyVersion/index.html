@@ -65,6 +65,26 @@
             this.xViejo = 0;
             this.yViejo = 0;
             this.moveCollider  = moveCollider;
+            this.listaDePermitidos = []
+        }
+
+        addPermitido(p){
+            this.listaDePermitidos.push(p);
+        }
+
+        puedeOverlapear(p){
+            if (this.listaDePermitidos.length > 0) {
+                var p2 = searchMyClass(p);
+                for (var i = 0; i < this.listaDePermitidos.length; i++) {
+                    if (this.listaDePermitidos[i] == p2) {
+                        return true;
+                    }
+                }
+                return false;
+            }else{
+                return true;
+            }
+
         }
         
         resizeoDropZone(equis, ye){
@@ -275,15 +295,17 @@
             //itemsList.push(book1);
         itemCreation(240,550,'book1',this,0,-10,0.6,0,0.4,false,polygoon);
         itemCreation(850,150,'book2',this,0,-20,0.6,0,0.4,false,polygoon3);
-        itemCreation(760,590,'book3',this,0,-20,0.6,0,0.4,false,polygoon2);
-        itemCreation(920,620,'flower',this,0,0,0.6,0,0.3,true,polygoon4);
-        itemCreation(880,510,'pyramid',this,0,0,0.6,0,0.3,true,polygoon5);
-        itemCreation(340,550,'globe',this,0,-10,0.6,0,0.3,true,polygoon6);
-        itemCreation(100,550,'smallbox',this,0,0,0.6,0,0.4,false,polygoon7,-20);
+        itemCreation(760,590,'book3',this,0,-10,0.6,0,0.4,false,polygoon2);
+        var flower = itemCreation(920,620,'flower',this,0,0,0.6,0,0.3,true,polygoon4);
+        var pyramid = itemCreation(880,510,'pyramid',this,0,0,0.6,0,0.3,true,polygoon5);
+        var globe = itemCreation(340,550,'globe',this,0,-10,0.6,0,0.3,true,polygoon6);
+        var t = itemCreation(100,550,'smallbox',this,0,0,0.6,0,0.4,false,polygoon7,-20);
         itemCreation(150,480,'cyl',this,0,-10,0.6,0,0.4,true,polygoon8);
-        itemCreation(900,260,'box',this,0,-80,0.6,3,0.5,false,polygoon9,10);
-        itemCreation(700,150,'rec-cb',this,0,-20,0.6,0,0.6,false,polygoon10);
-        //
+        itemCreation(900,260,'box',this,0,-80,0.6,3,0.5,false,polygoon9,50);
+        itemCreation(700,150,'rec-cb',this,0,-10,0.6,0,0.6,false,polygoon10);
+        t.addPermitido(globe);
+        t.addPermitido(pyramid);
+        t.addPermitido(flower);
 
 
 
@@ -443,10 +465,11 @@
         if (!choqueCofre) {
            // gameObject.x = dropZone.x+ searchMyClass(gameObject).xOffset;
             //gameObject.y = dropZone.y+ searchMyClass(gameObject).yOffset;
-            if (searchMyClassByZone(dropZone).colliderResbaloso ){
+            if (searchMyClassByZone(dropZone).colliderResbaloso  || !searchMyClassByZone(dropZone).puedeOverlapear(gameObject)){
                 gameObject.x = searchMyClass(gameObject).xIni;
                 gameObject.y = searchMyClass(gameObject).yIni;
                 searchMyClass(gameObject).estoyEnConfre = false;
+                return;
             }
             
             
@@ -489,7 +512,9 @@
                     it.restoreMyAbove();
                     meQuitoDeSuLista(it,it.their.ObjetosOverMe);
                 }
-                it.myCollider.destroy();
+                if (it.myCollider != null) {
+                    it.myCollider.destroy();
+                }
                  console.log("SALI POR ESTA ENTRADA");
                  return;
             }
@@ -613,7 +638,9 @@
         var image = proc.add.image(x, y, name).setInteractive();
         image.setScale(scale)
         proc.input.setDraggable(image);
-        itemsList.push(new Items(image,polygoon,x,y,xOffset,yOffset,alturaBase,scaleCollider,colliderResbaloso,moveCollider));
+        var t = new Items(image,polygoon,x,y,xOffset,yOffset,alturaBase,scaleCollider,colliderResbaloso,moveCollider);
+        itemsList.push(t);
+        return t ;
     }
 
     function zoneCreation(name,x,y,polygoon,fnc, scale = 1){
