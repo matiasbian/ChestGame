@@ -413,7 +413,7 @@
         if (AboveOtherObject(gameObject,gameReference) && !colaidin ){
             gameObject.setTint(0xff3333);
         }else if (colaidin  ){
-            if (!ultimoIngresado.colliderResbaloso && !AboveOtherObjectV2(gameObject,dragEnta.ObjetosOverMe) ){
+            if (!ultimoIngresado.colliderResbaloso && !AboveOtherObjectV2(gameObject,dragEnta.ObjetosOverMe) && ultimoIngresado.puedeOverlapear(gameObject) ){
                 gameObject.setTint(0x00AAAA);
             }else{
 
